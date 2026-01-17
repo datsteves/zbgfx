@@ -1,5 +1,6 @@
 const std = @import("std");
-const shader = @import("shaderc.zig");
+
+pub const shader = @import("shaderc.zig");
 
 pub const BuildShaderC = struct {
     cmd: *std.Build.Step.Run,
@@ -117,6 +118,8 @@ pub const BasicCompileOptions = struct {
     output: []const u8,
     bin2c: ?[]const u8 = null,
     includes: []const std.Build.LazyPath,
+    platform: ?shader.Platform = null,
+    profile: ?shader.Profile = null,
 };
 
 pub fn compileBasicBinZig(
@@ -242,9 +245,9 @@ pub fn compileBasic(
             shaderc,
             .{
                 .shaderType = input.shaderType,
-                .platform = os,
+                .platform = options.platform orelse os,
                 .optimize = optimize,
-                .profile = profile,
+                .profile = options.profile orelse profile,
                 .bin2c = options.bin2c,
                 .input = input.input,
                 .output = "shader.bin.h",
